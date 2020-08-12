@@ -33,7 +33,9 @@
                                         <button class="btn btn-info btn-sm open-modal" id="edit{{ $todo->id }}" value="{{ $todo->id }}">
                                             Edit
                                         </button>
-                                        <button class="btn btn-danger btn-sm delete-todo" value="{{ $todo->id }}">Delete</button>
+                                        <button class="btn btn-danger btn-sm delete-todo" id="delete{{ $todo->id }}" value="{{ $todo->id
+                                        }}">Delete
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -128,7 +130,7 @@
                     ajaxUrl = 'todos/' + todo_id;
                 }
 
-                $('.edit' + todo_id).html('<i class="fa fa-refresh fa-spin" style="font-size:24px"></i>');
+                $('#edit' + todo_id).html('<i class="fa fa-refresh fa-spin" style="font-size:24px"></i>');
                 $.ajax({
                     type: type,
                     url: ajaxUrl,
@@ -138,8 +140,8 @@
                         let todo = '<tr id="todo' + data.id + '"><td>' + data.id + '</td><td>' + data.title + '</td><td>' + (data.desc.slice(0, 30))
                             + '...' +
                             '</td>';
-                        todo += '<td><button class="btn btn-info open-modal" value="' + data.id + '">Edit</button>&nbsp;';
-                        todo += '<button class="btn btn-danger delete-todo" value="' + data.id + '">Delete</button></td></tr>';
+                        todo += '<td><button class="btn btn-info btn-sm open-modal" value="' + data.id + '">Edit</button>&nbsp;';
+                        todo += '<button class="btn btn-danger btn-sm delete-todo" value="' + data.id + '">Delete</button></td></tr>';
                         if (state == "add") {
                             $('#todo-list').append(todo);
                             const Toast = Swal.mixin({
@@ -193,7 +195,7 @@
                         'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
                     }
                 });
-
+                $('#delete' + todo_id).html('<i class="fa fa-refresh fa-spin" style="font-size:24px"></i>');
                 $.ajax({
                     type: "DELETE",
                     url: 'todos/' + todo_id,
