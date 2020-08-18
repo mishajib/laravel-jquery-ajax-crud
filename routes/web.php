@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    $todos = \App\Todo::all();
+    $todos = \App\Todo::latest()->get();
     return view('home', compact('todos'));
 });
 

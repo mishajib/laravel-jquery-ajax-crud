@@ -1,55 +1,61 @@
 @extends('welcome')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card border-primary">
-                    <div class="card-header border-primary card-info">
-                        <h1 class="card-title">
-                            To Do List
-                            <button class="btn btn-success btn-sm float-right addModalBtn">Add new</button>
-                        </h1>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-dark">
-                            <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Title</th>
-                                <th scope="col">Desc</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                            </thead>
-                            <tbody id="todo-list" data-name="todo-list">
-                            @forelse($todos as $key => $todo)
-                                <tr id="todo{{ $todo->id }}">
-                                    <th scope="row">{{ ++$key }}</th>
-                                    <td>{{ $todo->title }}</td>
-                                    <td>
-                                        {{ Str::limit($todo->desc, 30) }}
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-info btn-sm open-modal" id="edit{{ $todo->id }}" value="{{ $todo->id }}">
-                                            Edit
-                                        </button>
-                                        <button class="btn btn-danger btn-sm delete-todo" id="delete{{ $todo->id }}" value="{{ $todo->id
-                                        }}">Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
+    <div id="table">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-primary">
+                        <div class="card-header border-primary card-info">
+                            <h1 class="card-title">
+                                To Do List
+                                <button class="btn btn-success btn-sm float-right addModalBtn">Add new</button>
+                            </h1>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-dark">
+                                <thead>
                                 <tr>
-                                    <td colspan="100%">No data found!</td>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Desc</th>
+                                    <th scope="col">Action</th>
                                 </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody id="todo-list" data-name="todo-list">
+                                @php($i = 1)
+                                @forelse($todos as $key => $todo)
+                                    <tr id="todo{{ $todo->id }}">
+                                        <th scope="row">{{ $i++ }}</th>
+                                        <td>{{ $todo->title }}</td>
+                                        <td>
+                                            {{ Str::limit($todo->desc, 30) }}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm open-modal" id="edit{{ $todo->id }}"
+                                                    value="{{ $todo->id }}">
+                                                Edit
+                                            </button>
+                                            <button class="btn btn-danger btn-sm delete-todo" id="delete{{ $todo->id }}"
+                                                    value="{{ $todo->id
+                                        }}">Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="100%">No data found!</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
 
     <div class="modal fade" id="modal" aria-hidden="true">
@@ -130,20 +136,14 @@
                     ajaxUrl = 'todos/' + todo_id;
                 }
 
-                $('#edit' + todo_id).html('<i class="fa fa-refresh fa-spin" style="font-size:24px"></i>');
                 $.ajax({
                     type: type,
                     url: ajaxUrl,
                     data: formData,
                     dataType: 'json',
                     success: function (data) {
-                        let todo = '<tr id="todo' + data.id + '"><td>' + data.id + '</td><td>' + data.title + '</td><td>' + (data.desc.slice(0, 30))
-                            + '...' +
-                            '</td>';
-                        todo += '<td><button class="btn btn-info btn-sm open-modal" value="' + data.id + '">Edit</button>&nbsp;';
-                        todo += '<button class="btn btn-danger btn-sm delete-todo" value="' + data.id + '">Delete</button></td></tr>';
                         if (state == "add") {
-                            $('#todo-list').append(todo);
+                            $('#table').load(location.href + '#table');
                             const Toast = Swal.mixin({
                                 toast: true,
                                 position: 'top-end',
@@ -161,7 +161,7 @@
                                 title: 'Added Successful'
                             })
                         } else {
-                            $("#todo" + todo_id).replaceWith(todo);
+                            $('#table').load(location.href + '#table');
                             const Toast = Swal.mixin({
                                 toast: true,
                                 position: 'top-end',
@@ -208,7 +208,14 @@
                     }
                 });
             });
-
+            setInterval(function () {
+                getUpdates();
+            }, 6000);
         });
+
+
+        function getUpdates() {
+            $("#table").load(location.href + "#table");
+        }
     </script>
 @endpush
